@@ -16,79 +16,59 @@ import java.util.List;
 @Service
 public class BlogService {
     @Autowired
-    BlogRepository blogRepository;
+    BlogRepository blogRepository1;
 
     @Autowired
-    ImageService imageService;
+    ImageService imageService1;
 
     @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    ImageRepository imageRepository;
+    UserRepository userRepository1;
 
     public List<Blog> showBlogs(){
         //find all blogs
-        List<Blog> blogList = blogRepository.findAll();
+        return  blogRepository1.findAll();
 
-        return blogList;
     }
 
     public void createAndReturnBlog(Integer userId, String title, String content) {
         //create a blog at the current time
-
+        Blog blog=new Blog(title,content,new Date());
+        blog.setUser(userRepository1.findById(userId).get());
+        User user=userRepository1.findById(userId).get();
+        List<Blog> res=user.getBlogList();
+        res.add(blog);
+        user.setBlogList(res);
+        blogRepository1.save(blog);
+        userRepository1.save(user);
         //updating the blog details
 
         //Updating the userInformation and changing its blogs
-
-        User user = userRepository.findById(userId).get();
-
-        Blog blog = new Blog(title,content);
-
-        blog.setUser(user);
-
-        List<Blog> blogList = user.getBlogList();
-
-        if(blogList==null){
-            blogList=new ArrayList<>();
-        }
-
-        blogList.add(blog);
-
-        user.setBlogList(blogList);
-
-        userRepository.save(user);
-        blogRepository.save(blog);
 
     }
 
     public Blog findBlogById(int blogId){
         //find a blog
-        return blogRepository.findById(blogId).get();
+        return blogRepository1.findById(blogId).get();
     }
 
     public void addImage(Integer blogId, String description, String dimensions){
         //add an image to the blog after creating it
-
-        Blog blog = blogRepository.findById(blogId).get();
-
-        Image image = imageService.createAndReturn(blog,description,dimensions);
-
-        blogRepository.save(blog);
+        Blog blog=blogRepository1.findById(blogId).get();
+        Image image=imageService1.createAndReturn(blog,description,dimensions);
+        image.setBlog(blog);
+        List<Image> imageList=blog.getImageList();
+        if(imageList==null) imageList=new ArrayList<>();
+        imageList.add(image);
+        blog.setImageList(imageList);
+        blogRepository1.save(blog);
 
     }
 
     public void deleteBlog(int blogId){
         //delete blog and corresponding images
-        Blog blog = blogRepository.findById(blogId).get();
+        if(blogRepository1.findById(blogId).get()==null) return;
+        blogRepository1.deleteById(blogId);
 
-        List<Image> imageList = blog.getImageList();
 
-        if(imageList!=null){
-            for(Image image : imageList){
-                imageRepository.delete(image);
-            }
-        }
-        blogRepository.deleteById(blogId);
     }
 }

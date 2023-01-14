@@ -1,6 +1,7 @@
 package com.driver.controller;
 
 import com.driver.models.User;
+import com.driver.repositories.UserRepository;
 import com.driver.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,9 +11,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-
     @Autowired
     UserService userService;
+    @Autowired
+    private UserRepository userRepository;
 
     @PostMapping("/create")
     public ResponseEntity<Void> createUser(@RequestBody User user) {
@@ -34,7 +36,7 @@ public class UserController {
 
     @GetMapping("/find/{username}")
     public ResponseEntity<User> findUserByUsername(@PathVariable String username) {
-        User user = userService.findUserByUsername(username);
+        User user=userService.findUserByUsername(username);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 }
