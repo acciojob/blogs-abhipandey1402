@@ -11,22 +11,26 @@ import java.util.List;
 @Service
 public class UserService {
     @Autowired
-    UserRepository userRepository3;
+    UserRepository userRepository;
 
     @Autowired
-    BlogService blogService3;
+    BlogService blogService;
 
     public void createUser(User user){
+        userRepository.save(user);
     }
 
     public void deleteUser(int userId){
+        userRepository.deleteById(userId);
     }
 
     public void updateUser(User user){
-        userRepository3.save(user);
+
+        userRepository.save(user);
     }
 
     public User findUserByUsername(String username){
-        return userRepository3.findByUsername(username);
+
+        return userRepository.findByUsername(username);
     }
 }
